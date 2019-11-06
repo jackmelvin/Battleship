@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DotComGameV3</string>
+    <string name="bt_startGame">Start Game</string>
+    <string name="bt_continue">Continue</string>
+    <string name="bt_mainMenu">Main Menu</string>
+    <string name="bt_replay">Replay</string>
+    <string name="tv_endGame_lose">You lost!!!</string>
+    <string name="tv_endGame_win">You won\nCongratulations!!!</string>
+    <string name="tv_user">あなた</string>
+    <string name="tv_com">COM</string>
+</resources>
