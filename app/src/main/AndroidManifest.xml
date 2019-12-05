@@ -10,8 +10,7 @@
         android:screenOrientation="landscape"
         android:supportsRtl="true"
         android:theme="@style/AppTheme2">
-        <activity android:name=".GamePlayActivity"></activity>
-        <activity android:name=".PlaceShipActivity" />
+        <activity android:name=".GamePlayActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

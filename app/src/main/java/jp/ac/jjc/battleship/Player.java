@@ -8,34 +8,44 @@ enum ShootResult {
 }
     class Player {
     Board board;
+    GamePlayActivity.GamePlay game;
+    ShootResult lastShoot = null;
 
-    Player(Board board) {
+    Player(Board board, GamePlayActivity.GamePlay game) {
         this.board = board;
+        this.game = game;
     }
 
     Board getBoard() {
         return board;
     }
 
+
     ShootResult shoot(Cell cellToShoot) {
         if(!cellToShoot.isHit()) {
+            game.playSoundEffect("FIRE");
             cellToShoot.hit();
             if(cellToShoot.hasShip()) {
+                game.playSoundEffect("HIT");
                 if(cellToShoot.getShip().isSunk()) {
-                    cellToShoot.getShip().sunk();
+                    cellToShoot.getShip().sink();
                     board.incrNumOfShipsSunk();
                     if(board.areAllShipsSunk()) {
-                        return ShootResult.END;
+                        lastShoot = ShootResult.END;
                     } else {
-                        return ShootResult.KILL;
+                        lastShoot = ShootResult.KILL;
                     }
                 } else {
-                    return ShootResult.HIT;
+                    lastShoot = ShootResult.HIT;
                 }
+            } else {
+                game.playSoundEffect("MISS");
+                lastShoot = ShootResult.MISS;
             }
-            return ShootResult.MISS;
+        } else {
+            lastShoot = null;
         }
-        return ShootResult.FALSE;
+        return lastShoot;
     }
 
 }

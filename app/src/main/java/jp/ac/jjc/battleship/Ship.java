@@ -1,83 +1,52 @@
 package jp.ac.jjc.battleship;
 
-import org.parceler.Parcel;
+import android.content.Context;
+import android.util.AttributeSet;
+
+
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import java.util.ArrayList;
-@Parcel
-public class Ship {
-    int size;
-    int id;
-    int imgBaseId;
-    int numOfHit;
-    boolean dir = true;
-    boolean isPlaced;
-    ArrayList<Cell> placedCells = new ArrayList<Cell>();
-    ArrayList<Cell> surroundCells = new ArrayList<Cell>();
-    //Empty constructor needed by the Parceler library
-    public Ship() {
+
+public class Ship extends AppCompatImageButton {
+    private int size;
+    private boolean dir = true;
+    private boolean isPlaced;
+    private ArrayList<Cell> placedCells = new ArrayList<Cell>();
+    private ArrayList<Cell> surroundCells = new ArrayList<Cell>();
+
+    public Ship(Context context) {
+        super(context);
     }
 
-    public Ship(int size, int id) {
+    public Ship(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+//    public Ship(Context context, int size) {
+//        super(context);
+//        this.size = size;
+//    }
+
+
+    void setSize(int size) {
         this.size = size;
-        this.id = id;
     }
-
-//    //For parcelable
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//    @Override
-//    public void writeToParcel(Parcel out, int flags) {
-//        out.writeInt(size);
-//        out.writeInt(id);
-//        out.writeInt(imgBaseId);
-//        out.writeBooleanArray(new boolean[] {
-//                dir, isPlaced
-//        });
-//        out.writeList(placedCells);
-//    }
-//    Ship(Parcel in) {
-//        this.size = in.readInt();
-//        this.id = in.readInt();
-//        this.imgBaseId = in.readInt();
-//        boolean[] myBooleanArray = in.createBooleanArray();
-//        this.dir = myBooleanArray[0];
-//        this.isPlaced = myBooleanArray[1];
-//    }
-//    public static final Creator<Ship> CREATOR = new Creator<Ship>() {
-//        @Override
-//        public Ship createFromParcel(Parcel in) {
-//            return new Ship(in);
-//        }
-//        @Override
-//        public Ship[] newArray(int size) {
-//            return new Ship[size];
-//        }
-//    };
-//
-//    //End parcelable
-
-    public int getSize() {
+    int getSize() {
         return size;
     }
-    public int getId() {
-        return id;
-    }
-    public void setDir(boolean dir) {
+    void setDir(boolean dir) {
         this.dir = dir;
     }
-    public boolean getDir() {
+    boolean getDir() {
         return dir;
     }
-    public void changeDir() {
-        if(dir) {
-            dir = false;
-        } else {
-            dir = true;
-        }
+    void rotate() {
+        dir = !dir;
     }
-    public int getImgBaseId() {
+
+    int getImgBaseId() {
+        int imgBaseId;
         if(dir) {
             switch (size) {
                 case 1:
@@ -116,7 +85,7 @@ public class Ship {
         return imgBaseId;
     }
 
-    public boolean isSunk() {
+    boolean isSunk() {
         for(Cell cell : placedCells) {
             if(!cell.isHit()) {
                 return false;
@@ -124,43 +93,52 @@ public class Ship {
         }
         return true;
     }
-    public void sunk() {
+    void sink() {
+        for(Cell cell : placedCells) {
+            cell.updateImg();
+        }
         for(Cell cell : surroundCells) {
             cell.hit();
         }
     }
 
-    public boolean isPlaced() {
+    boolean isPlaced() {
         return isPlaced;
     }
-    public void removeShip() {
+    void removeShip() {
 //        isPlaced = false;
         if(!placedCells.isEmpty()) {
             for(Cell cellToRemove : placedCells) {
-                cellToRemove.removeShip();
+                cellToRemove.removeShip(this);
             }
             placedCells.clear();
-            //Remove aroundCells
+            //Remove surroundCells
             for(Cell cell : surroundCells) {
-                cell.shipsArround.remove(this);
+                cell.removeSurroundShip(this);
             }
             surroundCells.clear();
         }
     }
-    public ArrayList<Cell> getPlacedCells() {
+    ArrayList<Cell> getPlacedCells() {
         return placedCells;
     }
-    public void setSurroundCells(ArrayList<Cell> arroundCells) {
-        this.surroundCells = arroundCells;
-    }
-    public ArrayList<Cell> getSurroundCells() {
+
+    ArrayList<Cell> getSurroundCells() {
         return surroundCells;
     }
-    public void placeShip(ArrayList<Cell> placedCells) {
+    void placeShip(ArrayList<Cell> cellsToPlace, ArrayList<Cell> surroundCells) {
+        //Set this ship on each cell-to-place
+        int i = 0;
+        for(Cell cell : cellsToPlace) {
+            cell.setShip(this, getImgBaseId() + i++);
+        }
+        this.placedCells = cellsToPlace;
+        //Set surround cells
+        this.surroundCells = surroundCells;
+        for(Cell cell : surroundCells) {
+            cell.setSurroundShip(this);
+        }
+
         isPlaced = true;
-        this.placedCells = placedCells;
-    }
-    public void rotate() {
-        dir = !dir;
     }
 }

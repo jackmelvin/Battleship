@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chiến hạm</string>
+    <string name="bt_startGame">Bắt đầu</string>
+    <string name="bt_continue">Tiếp tục</string>
+    <string name="bt_mainMenu">Menu chính</string>
+    <string name="bt_replay">Chơi lại</string>
+    <string name="tv_endGame_lose">Thất bại!!!</string>
+    <string name="tv_endGame_win">Chiến thắng!!!</string>
+    <string name="tv_user">Bạn</string>
+    <string name="tv_com">Máy</string>"
+    <string name="bt_howToPlay">Cách chơi</string>
+    <string name="tv_htp_place_ship">Đặt chiến hạm</string>
+    <string name="tv_htp_1">Chọn một chiến hạm ① sau đó chọn một ô trên bảng ② để đặt chiến hạm, ô được chọn sẽ là đầu của chiến hạm.</string>
+    <string name="tv_htp_2">Chọn một chiến hạm đã được đặt trên bảng và bấm nút Xoay ③ để xoay chiến hạm.</string>
+    <string name="tv_htp_3">★Hai chiến hạm không thể được đặt sát nhau, cần có khoảng cách ít nhất 1 ô trống.</string>
+    <string name="tv_htp_4">Chọn nút Ngẫu nhiên ④ để đặt ngẫu nhiên tất cả chiến hạm. Sau khi đặt vẫn có thể chỉnh sửa.</string>
+    <string name="tv_htp_5">Khi tất cả chiến hạm đã được đặt trên bảng, bấm nút Tiếp theo ⑤ để vào màn chơi.</string>
+    <string name="tv_htp_game_play">Cách chơi</string>
+    <string name="tv_htp_6">Bảng của bạn ở bên trái, bảng của đối phương ở bên phải.\n
+        Chọn một ô trên bảng của đối phương để bắn.\n
+        ⚠Nếu bắn trúng hoặc phá hủy một chiến hạm, bạn có thể bắn thêm một lượt, nếu trượt bạn mất lượt. Tương tự với đối phương.\n
+        Bên nào phá hủy toàn bộ chiến hạm của đối phương trước sẽ giành chiến thắng.</string>
+    <string name="span_hit">trúng</string>
+    <string name="span_kill">phá hủy một chiến hạm</string>
+    <string name="span_miss">trượt</string>
+    <string name="bt_close">Đóng lại</string>
+    <string name="tv_guide_place_failed">⚠︎Không thể đặt chiến hạm ở đây.</string>
+    <string name="tv_guide_rotate_failed">⚠Không thể xoay chiến hạm.</string>
+    <string name="tv_guide_rotate_select_ship">⚠Chọn một chiến hạm trên bảng để xoay.</string>
+    <string name="tv_guide_next_ship_not_placed">⚠︎︎Đặt tất cả chiến hạm lên bảng để vào màn chơi.</string>
+    <string name="sw_music">Nhạc nền</string>
+    <string name="sw_sound">Âm thanh</string>
+</resources>

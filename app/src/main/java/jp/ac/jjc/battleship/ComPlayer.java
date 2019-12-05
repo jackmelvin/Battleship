@@ -1,40 +1,39 @@
 package jp.ac.jjc.battleship;
 
 import android.os.Handler;
-import android.widget.ImageButton;
 
+import java.util.ArrayList;
 import java.util.Random;
 
-enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
-}
-
 class ComPlayer extends Player {
-    private ImageButton[][] ibBoard;
-    private GamePlayActivity.Game game;
     private Cell firstHit = null;
     private Cell nextHit = null;
+    private ComPlayer com = this;
+    private ArrayList<Integer> secondShootDir;
+    private ShootResult lastShootResult = null;
 
-    public ComPlayer(Board board, ImageButton[][] ibBoard, GamePlayActivity.Game game) {
-        super(board);
-        this.ibBoard = ibBoard;
-        this.game = game;
+    ComPlayer(Board board, GamePlayActivity.GamePlay game) {
+        super(board, game);
         board.placeShipRandomly();
 
     }
-    public void randomlyShoot(final Board userBoard, final ImageButton[][] ibUserBoard) {
-        final Player com = this;
-        //Add a 1 second delay
+    void randomlyShoot(final Board userBoard) {
+        game.disableBoard(board);
+        //Add a delay
+        int delay;
+        if(lastShootResult == ShootResult.HIT) {
+            delay = 1000;
+        } else {
+            delay = 1500 + (int)(Math.random() * 500);
+        }
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Random rand = new Random();
-                boolean success = false;
-                while(!success) {
+                boolean shootSuccess = false;
+                while(!shootSuccess) {
                     int x = 0, y = 0;
 
                     if (firstHit == null) { //Not getting any hit yet
@@ -44,34 +43,53 @@ class ComPlayer extends Player {
                             continue;
                         }
                     } else if (nextHit == null) { //Second shoot after getting a cell hit
-                        int randNum = rand.nextInt(4);
-                        int firstX = firstHit.getCoord()[0];
-                        int firstY = firstHit.getCoord()[1];
-                        switch(randNum) {
-                            case 0: //Shoot the cell to the left of firstHit
-                                if(!userBoard.isOutOfBounds(firstX, firstY-1) && !userBoard.getCells()[firstX][firstY-1].isHit()) {
-                                    x = firstX;
-                                    y = firstY-1;
-                                    break;
-                                }
-                            case 1: //Shoot the cell to the right of firstHit
-                                if(!userBoard.isOutOfBounds(firstX, firstY+1) && !userBoard.getCells()[firstX][firstY+1].isHit()) {
-                                    x = firstX;
-                                    y = firstY+1;
-                                    break;
-                                }
-                            case 2: //Shoot the cell above of firstHit
-                                if(!userBoard.isOutOfBounds(firstX-1, firstY) && !userBoard.getCells()[firstX-1][firstY].isHit()) {
-                                    x = firstX-1;
-                                    y = firstY;
-                                    break;
-                                }
-                            case 3: //Shoot the cell below firstHit
-                                if(!userBoard.isOutOfBounds(firstX+1, firstY) && !userBoard.getCells()[firstX+1][firstY].isHit()) {
-                                    x = firstX+1;
-                                    y = firstY;
-                                    break;
-                                }
+                        boolean success = false;
+                        while(!success) {
+                            int randNum = rand.nextInt(secondShootDir.size());
+                            int randDir = secondShootDir.get(randNum);
+                            int firstX = firstHit.getCoord()[0];
+                            int firstY = firstHit.getCoord()[1];
+                            switch(randDir) {
+                                case 0: //Shoot the cell to the left of firstHit
+                                    if(!userBoard.isOutOfBounds(firstX, firstY-1) && !userBoard.getCells()[firstX][firstY-1].isHit()) {
+                                        x = firstX;
+                                        y = firstY-1;
+                                        break;
+                                    } else {
+                                        secondShootDir.remove(Integer.valueOf(randDir));
+                                        continue;
+                                    }
+                                case 1: //Shoot the cell to the right of firstHit
+                                    if(!userBoard.isOutOfBounds(firstX, firstY+1) && !userBoard.getCells()[firstX][firstY+1].isHit()) {
+                                        x = firstX;
+                                        y = firstY+1;
+                                        break;
+                                    } else {
+                                        secondShootDir.remove(Integer.valueOf(randDir));
+                                        continue;
+                                    }
+                                case 2: //Shoot the cell above of firstHit
+                                    if(!userBoard.isOutOfBounds(firstX-1, firstY) && !userBoard.getCells()[firstX-1][firstY].isHit()) {
+                                        x = firstX-1;
+                                        y = firstY;
+                                        break;
+                                    } else {
+                                        secondShootDir.remove(Integer.valueOf(randDir));
+                                        continue;
+                                    }
+                                case 3: //Shoot the cell below firstHit
+                                    if(!userBoard.isOutOfBounds(firstX+1, firstY) && !userBoard.getCells()[firstX+1][firstY].isHit()) {
+                                        x = firstX+1;
+                                        y = firstY;
+                                        break;
+                                    } else {
+                                        secondShootDir.remove(Integer.valueOf(randDir));
+                                        continue;
+                                    }
+                                default:
+                                    continue;
+                            }
+                            success = true;
                         }
                     } else { //Shoot the cell next to nextHit
                         int firstX = firstHit.getCoord()[0];
@@ -113,84 +131,43 @@ class ComPlayer extends Player {
                             }
                         }
                     }
-                    System.out.println("COM shot: " + x + "," + y);
                     ShootResult result = shoot(userBoard.getCells()[x][y]);
-                    ibUserBoard[x][y].setBackgroundResource(userBoard.getCells()[x][y].getImgBaseId());
+                    lastShootResult = result;
                     if(result == ShootResult.MISS) { //Case Miss
-                        //Update miss cell img
-                        updateCellImg(userBoard.getCells()[x][y], ibUserBoard);
                         //To user turn
                         //Enable Com Board to take shoot
-                        enableBoard(ibBoard);
+                        game.enableBoard(board);
                         //Change arrow direction
                         game.changeArrowDir();
-                    } else {
-                        if (result == ShootResult.KILL || result == ShootResult.END) { //Case Kill or End
-                            //Update ship placed cells and surround cells img
-                            updateShipImg(userBoard.getCells()[x][y].getShip(), ibUserBoard);
-                            if (result == ShootResult.END) {
-                                //EndGame
-                                game.endGame(com);
-                            }
-                            //Got a kill, shoot randomly
-                            firstHit = null;
-                            nextHit = null;
-                            randomlyShoot(userBoard, ibUserBoard);
-                        } else { //Case Hit
-                            //Update hit cell img
-                            updateCellImg(userBoard.getCells()[x][y], ibUserBoard);
-                            //Set condition for next shoot
-                            if(firstHit == null) {
-                                firstHit = userBoard.getCells()[x][y];
-                            } else {
-                                nextHit = userBoard.getCells()[x][y];
-                            }
-                            randomlyShoot(userBoard, ibUserBoard);
+                    } else if (result == ShootResult.END) { //Case End
+                        //EndGame
+                        game.endGame(com);
+                    } else if (result == ShootResult.KILL) {//Case Kill
+                        //Got a kill, shoot randomly
+                        firstHit = null;
+                        nextHit = null;
+                        randomlyShoot(userBoard);
+                    } else { //Case Hit
+                        //Set condition for next shoot
+                        if(firstHit == null) {
+                            firstHit = userBoard.getCells()[x][y];
+                            secondShootDir = new ArrayList<>();
+                            secondShootDir.add(0);
+                            secondShootDir.add(1);
+                            secondShootDir.add(2);
+                            secondShootDir.add(3);
+                        } else {
+                            nextHit = userBoard.getCells()[x][y];
                         }
+                        randomlyShoot(userBoard);
                     }
-                    success = true;
+                    shootSuccess = true;
                 }
             }
-        }, 1000);
+        }, delay);
 
 
 
     }
-
-    public void updateCellImg(Cell cell, ImageButton[][] ibUserBoard) {
-        int x = cell.getCoord()[0];
-        int y = cell.getCoord()[1];
-        ibUserBoard[x][y].setBackgroundResource(cell.getImgBaseId());
-    }
-
-    public void updateShipImg(Ship ship, ImageButton[][] ibUserBoard) {
-        //Update ship placed cells
-        for(Cell cell : ship.getPlacedCells()) {
-            updateCellImg(cell, ibUserBoard);
-        }
-        //Update surround cells
-        for(Cell cell : ship.getSurroundCells()) {
-            updateCellImg(cell, ibUserBoard);
-        }
-    }
-
-    public void enableBoard(ImageButton[][] ibBoard) {
-        for(int x = 0; x < ibBoard.length; x++) {
-            for(int y = 0; y < ibBoard[0].length; y++) {
-                if(!board.getCells()[x][y].isHit) {
-                    ibBoard[x][y].setClickable(true);
-                }
-            }
-        }
-    }
-
-    public void disableBoard(ImageButton[][] ibBoard) {
-        for(int x = 0; x < ibBoard.length; x++) {
-            for(int y = 0; y < ibBoard[0].length; y++) {
-                ibBoard[x][y].setClickable(false);
-            }
-        }
-    }
-
 
 }

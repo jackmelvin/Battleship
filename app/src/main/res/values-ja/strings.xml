@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">戦艦</string>
+    <string name="bt_startGame">ゲーム開始</string>
+    <string name="bt_continue">続ける</string>
+    <string name="bt_mainMenu">メインメニュー</string>
+    <string name="bt_replay">リプレイ再生</string>
+    <string name="tv_endGame_lose">敗れた!!!</string>
+    <string name="tv_endGame_win">あなたの勝ち。おめでとう！</string>
+    <string name="tv_user">あなた</string>
+    <string name="tv_com">COM</string>"
+    <string name="bt_howToPlay">やり方</string>
+    <string name="tv_htp_place_ship">戦艦の配置</string>
+    <string name="tv_htp_1">戦艦をタッチ①し、ボードのセルをタッチ②すると、戦艦が配置されます。選択されたセルは戦艦の頭になリます。</string>
+    <string name="tv_htp_2">ボードに配置された戦艦をタッチし、回転ボタン③をタッチすると、戦艦が回転します。</string>
+    <string name="tv_htp_3">★２隻の戦艦を近接に置くことができません、一つ以上のセルのスペースが必要です。</string>
+    <string name="tv_htp_4">オールランダムボタン④をタッチすると、全ての戦艦がランダムに配置されます。後からでも位置や回転を変えることができます。</string>
+    <string name="tv_htp_5">全ての戦艦がボードに配置されたら、プレイボタン⑤をタッチし、ゲームを開始します。</string>
+    <string name="tv_htp_game_play">ゲームプレイ</string>
+    <string name="tv_htp_6">あなたのボードは左に、敵のボードは右にあります。\n
+        敵のボードのセルをタッチし、撃ちます。\n
+        ⚠ヒット またはキル の場合、もう一発撃つことができます。ミス の場合、敵のターンになります。\n
+        敵の全ての戦艦を破壊したら勝ち、あなたの全ての戦艦が破壊されたら負けです。</string>
+    <string name="span_hit">ヒット</string>
+    <string name="span_kill">キル</string>
+    <string name="span_miss">ミス</string>
+    <string name="bt_close">閉じる</string>
+    <string name="tv_guide_place_failed">⚠選択された場所に戦艦を配置できません。</string>
+    <string name="tv_guide_rotate_failed">⚠︎戦艦を回転させられません。</string>
+    <string name="tv_guide_rotate_select_ship">⚠ボードに配置された戦艦を選択してください。︎</string>
+    <string name="tv_guide_next_ship_not_placed">⚠全ての戦艦を配置してください。</string>
+    <string name="sw_music">BGM</string>
+    <string name="sw_sound">効果音</string>
+</resources>

@@ -1,11 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DotComGameV3</string>
+    <string name="app_name">Battleship</string>
     <string name="bt_startGame">Start Game</string>
     <string name="bt_continue">Continue</string>
     <string name="bt_mainMenu">Main Menu</string>
     <string name="bt_replay">Replay</string>
     <string name="tv_endGame_lose">You lost!!!</string>
     <string name="tv_endGame_win">You won\nCongratulations!!!</string>
-    <string name="tv_user">あなた</string>
-    <string name="tv_com">COM</string>
+    <string name="tv_user">You</string>
+    <string name="tv_com">COM</string>"
+    <string name="bt_howToPlay">How to play</string>
+    <string name="tv_htp_place_ship">Place Ships</string>
+    <string name="tv_htp_1">Touch a ship ① then touch a cell on board ② to place ship, the touched cell will be the ship\'s head.</string>
+    <string name="tv_htp_2">Touch a ship placed on board and click Rotate button ③ to rotate the ship.</string>
+    <string name="tv_htp_3">★Two ships can\'t be placed right next to each other, there must be at least one cell of space between them.</string>
+    <string name="tv_htp_4">Touch the All Random button ④ to place all ships randomly. You can still edit them later.</string>
+    <string name="tv_htp_5">When all ships are placed on board, touch Next button ⑤ to play.</string>
+    <string name="tv_htp_game_play">Game Play</string>
+    <string name="tv_htp_6">Your board is on the left, enemy\'s board is on the right.\n
+        Select a cell on enemy\'s board to shoot.\n
+        ⚠If you get a HIT or KILL, you can shoot one more time. If you get a MISS, you lose your turn. Same with enemy.\n
+        One who first destroy all enemy\'s ships wins the game.</string>
+    <string name="span_hit">HIT</string>
+    <string name="span_kill">KILL</string>
+    <string name="span_miss">MISS</string>
+    <string name="bt_close">Close</string>
+    <string name="tv_guide_place_failed">⚠︎Can\'t place ship here.</string>
+    <string name="tv_guide_rotate_failed">⚠︎Can\'t rotate ship.</string>
+    <string name="tv_guide_rotate_select_ship">⚠︎Select a ship placed on board to rotate.</string>
+    <string name="tv_guide_next_ship_not_placed">⚠︎Place all ship on the board to play.</string>
+    <string name="sw_music">Music</string>
+    <string name="sw_sound">Sound</string>
 </resources>

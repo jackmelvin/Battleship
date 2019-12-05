@@ -5,11 +5,67 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:background="@drawable/background">
-
-    <ImageButton
-        android:id="@+id/bt_StartGame"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/bt_startgame" />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/bt_StartGame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/bt_startGame"
+            android:textSize="24sp"
+            android:textColor="#7F00FF"
+            android:background="@drawable/button_border"/>
+        <Button
+            android:id="@+id/bt_howToPlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/bt_howToPlay"
+            android:textSize="24sp"
+            android:textColor="#7F00FF"
+            android:background="@drawable/button_border"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:orientation="vertical">
+            <Switch
+                android:id="@+id/sw_music_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="@string/sw_music"
+                android:textSize="20sp"
+                android:textColor="#7F00FF"
+                android:background="#00000000"/>
+
+            <Switch
+                android:id="@+id/sw_sound_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="@string/sw_sound"
+                android:textSize="20sp"
+                android:textColor="#7F00FF"
+                android:background="#00000000"/>
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>
