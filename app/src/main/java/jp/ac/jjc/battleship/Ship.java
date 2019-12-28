@@ -10,10 +10,13 @@ import java.util.ArrayList;
 
 public class Ship extends AppCompatImageButton {
     private int size;
-    private boolean dir = true;
+    private boolean dir = true; //True == Horizontal
     private boolean isPlaced;
+    private boolean isSelected;
+    private boolean isVisible;
     private ArrayList<Cell> placedCells = new ArrayList<Cell>();
     private ArrayList<Cell> surroundCells = new ArrayList<Cell>();
+    private int shipImgId;
 
     public Ship(Context context) {
         super(context);
@@ -28,6 +31,13 @@ public class Ship extends AppCompatImageButton {
 //        this.size = size;
 //    }
 
+    void setShipImgId(int shipImgId) {
+        this.shipImgId = shipImgId;
+    }
+//
+//    int getShipImgId() {
+//        return shipImgId;
+//    }
 
     void setSize(int size) {
         this.size = size;
@@ -42,7 +52,21 @@ public class Ship extends AppCompatImageButton {
         return dir;
     }
     void rotate() {
+        if(dir) {
+            shipImgId += 2;
+        } else {
+            shipImgId -= 2;
+        }
         dir = !dir;
+        setImageResource(shipImgId);
+    }
+
+    boolean isVisible() {
+        return isVisible;
+    }
+
+    void isVisible(boolean visibility) {
+        isVisible = visibility;
     }
 
     int getImgBaseId() {
@@ -94,8 +118,8 @@ public class Ship extends AppCompatImageButton {
         return true;
     }
     void sink() {
-        for(Cell cell : placedCells) {
-            cell.updateImg();
+        if(!isVisible) {
+            isVisible = true;
         }
         for(Cell cell : surroundCells) {
             cell.hit();
@@ -123,9 +147,6 @@ public class Ship extends AppCompatImageButton {
         return placedCells;
     }
 
-    ArrayList<Cell> getSurroundCells() {
-        return surroundCells;
-    }
     void placeShip(ArrayList<Cell> cellsToPlace, ArrayList<Cell> surroundCells) {
         //Set this ship on each cell-to-place
         int i = 0;

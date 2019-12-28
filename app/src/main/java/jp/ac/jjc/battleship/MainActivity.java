@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //Update switch checked status
+        //Load switch checked status
         swMusic.setChecked(sharedPref.getBoolean("music", false));
         swSound.setChecked(sharedPref.getBoolean("sound", false));
         //Play / Resume music if switch is checked

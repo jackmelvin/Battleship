@@ -10,9 +10,14 @@ class Board {
     private Cell[][] cells;
     private ArrayList<Ship> ships;
 
-    Board(int size, Cell[][] cells, ArrayList<Ship> ships) {
+    Board(int size, ArrayList<Ship> ships) {
         this.size = size;
-        this.cells = cells;
+        this.cells = new Cell[size][size];
+        for(int x = 0; x < size; x++) {
+            for(int y = 0; y < size; y++) {
+                cells[x][y] = new Cell(x, y);
+            }
+        }
         this.ships = ships;
     }
 
@@ -40,10 +45,10 @@ class Board {
     }
 
     boolean canPlaceShip(Ship ship, Cell startCell) {
-        int x = startCell.getCoord()[0];
-        int y = startCell.getCoord()[1];
+        int x = startCell.getX();
+        int y = startCell.getY();
         //Hold cells where the ship is placed on
-        if(!ship.getDir()) { //Placing vertical ship
+        if(ship.getDir()) { //Placing vertical ship
             for(int i = 0; i < ship.getSize(); i++) {
                 //If the cell is out of the board
                 if(isOutOfBounds(x+i, y)) {
@@ -83,11 +88,11 @@ class Board {
     }
 
     void placeShip(Ship ship, Cell startCell) {
-        int x = startCell.getCoord()[0];
-        int y = startCell.getCoord()[1];
+        int x = startCell.getX();
+        int y = startCell.getY();
         //Hold cells where the ship is placed on
         ArrayList<Cell> cellsToPlace = new ArrayList<Cell>();
-        if(!ship.getDir()) { //Placing vertical ship
+        if(ship.getDir()) { //Placing vertical ship
             for(int i = 0; i < ship.getSize(); i++) {
                 cellsToPlace.add(cells[x+i][y]);
             }
@@ -99,8 +104,8 @@ class Board {
 
         //Set surround cells of placed ship
         //Coordinates of the cell at the end of the ship
-        int endCellX = cellsToPlace.get(cellsToPlace.size() - 1).getCoord()[0];
-        int endCellY = cellsToPlace.get(cellsToPlace.size() - 1).getCoord()[1];
+        int endCellX = cellsToPlace.get(cellsToPlace.size() - 1).getX();
+        int endCellY = cellsToPlace.get(cellsToPlace.size() - 1).getY();
         //Hold cells to be set as surround
         ArrayList<Cell> surroundCells = new ArrayList<Cell>();
         for(int i = x-1; i <= endCellX+1; i++) {

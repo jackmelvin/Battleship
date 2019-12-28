@@ -1,85 +1,77 @@
 package jp.ac.jjc.battleship;
 
-import android.content.Context;
-import android.util.AttributeSet;
-
-import androidx.appcompat.widget.AppCompatImageButton;
-
 import java.util.ArrayList;
 
-public class Cell extends AppCompatImageButton {
+public class Cell {
     /*Contain x-coordinate of the cell*/
     private int x = 0;
     /*Contain y-coordinate of the cell*/
     private int y = 0;
-    private int imgBaseId;
-    private Ship ship;
+    private int imageId = -1;
+    private int imageIdTemp = -1;
+
+    private Ship ship = null;
     /*Indicating if the cell has been hit or not*/
     private boolean isHit = false;
     /*Indicating if there is a ship placed on the cell*/
-    private boolean hasShip = false;
     private ArrayList<Ship> shipsSurround = new ArrayList<>();
 
-    public Cell(Context context) {
-        super(context);
-        imgBaseId = R.drawable.cell_default;
-    }
-
-    public Cell(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-
-    void setCoord(int x, int y) {
+    Cell(int x, int y) {
         this.x = x;
         this.y = y;
+        imageId = R.drawable.cell_default;
     }
 
-    int[] getCoord() {
-        return new int[]{x, y};
+    int getX() {
+        return x;
+    }
+
+    int getY() {
+        return y;
     }
 
     void hit() {
         isHit = true;
-        if(hasShip) {
-            imgBaseId += ship.getSize();
+        if(hasShip()) {
+            imageId += ship.getSize();
         } else {
-            imgBaseId = R.drawable.cell_miss;
+            imageId = R.drawable.cell_miss;
         }
-        setImageResource(imgBaseId);
     }
 
     boolean isHit() {
         return isHit;
     }
 
-    void updateImg() {
-        setImageResource(imgBaseId);
-    }
-
     boolean hasShip() {
-        return hasShip;
+        return (ship != null);
     }
 
     void setShip(Ship ship, int imgBaseId) {
-        hasShip = true;
         this.ship = ship;
-        this.imgBaseId = imgBaseId;
-        setImageResource(imgBaseId);
+        this.imageId = imgBaseId;
     }
 
     void removeShip(Ship shipToRemove) {
-        hasShip = false;
         ship = null;
         if(shipsSurround.indexOf(shipToRemove) != -1) {
             shipsSurround.remove(shipToRemove);
         }
-        imgBaseId = R.drawable.cell_default;
-        setImageResource(imgBaseId);
+        imageId = R.drawable.cell_default;
     }
 
-    int getImgBaseId() {
-        return imgBaseId;
+    int getImageId() {
+        return imageId;
+    }
+
+    void setImageId(int imageId) {
+        imageIdTemp = this.imageId;
+        this.imageId = imageId;
+    }
+
+    void restoreImageId() {
+        imageId = imageIdTemp;
+        imageIdTemp = 0;
     }
 
     Ship getShip() {

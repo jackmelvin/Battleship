@@ -1,6 +1,7 @@
 package jp.ac.jjc.battleship;
 
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,13 +11,17 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,16 +30,14 @@ import java.util.ArrayList;
 public class GamePlayActivity extends AppCompatActivity {
     final int SIZE = 10;
     final Context context = this;
-    final Handler handler = new Handler();
-    final int NUMOFSHIP = 10;
+    final int NUM_OF_SHIP = 10;
     Board userBoard;
     Board comBoard;
+    BoardView userBoardView;
+    BoardView comBoardView;
 
     Ship selectedShip = null;
-    boolean placingShip = false;
-    int shipImgId = 0;
 
-    TextView tvGuide;
     ImageView ivArrow;
     Dialog dialog;
     TextView tvEndGame;
@@ -48,6 +51,7 @@ public class GamePlayActivity extends AppCompatActivity {
     Player user;
     ComPlayer com;
     GamePlay game;
+    Toast toast = null;
 
 
     SoundPool soundPool;
@@ -132,7 +136,7 @@ public class GamePlayActivity extends AppCompatActivity {
             //Play start game sound
             playSoundEffect(soundIdGameStart);
             //Disable user board
-            disableBoard(userBoard);
+            disableBoard(user);
             //Hide parts for placing ship
             findViewById(R.id.place_ship_layout).setVisibility(View.GONE);
             //Display com board and com name
@@ -142,6 +146,10 @@ public class GamePlayActivity extends AppCompatActivity {
             ivArrow = findViewById(R.id.iv_arrow);
             ivArrow.setVisibility(View.VISIBLE);
             ivArrow.setTag("Right");
+            //Draw user board and com board
+            comBoardView.readyToDraw();
+            userBoardView.readyToDraw();
+            userBoardView.invalidate();
         }
 
         void endGame(Player player) {
@@ -182,19 +190,15 @@ public class GamePlayActivity extends AppCompatActivity {
             }
         }
 
-        void enableBoard(Board board) {
-            for(int x = 0; x < SIZE; x++) {
-                for(int y = 0; y < SIZE; y++) {
-                    board.getCells()[x][y].setClickable(true);
-                }
-            }
+        void enableComBoard() {
+            comBoardView.setOnTouchListener(new ComBoardListener());
         }
 
-        void disableBoard(Board board) {
-            for(int x = 0; x < SIZE; x++) {
-                for(int y = 0; y < SIZE; y++) {
-                    board.getCells()[x][y].setClickable(false);
-                }
+        void disableBoard(Player whoseBoard) {
+            if(whoseBoard instanceof ComPlayer) {
+                comBoardView.setOnTouchListener(null);
+            } else {
+                userBoardView.setOnTouchListener(null);
             }
         }
 
@@ -224,69 +228,70 @@ public class GamePlayActivity extends AppCompatActivity {
     }
 
     public void createBoard() {
-        //Create new UserBoard
 
-        //Create cells for User board and Com board
-        Cell[][] userCells = new Cell[SIZE][SIZE];
-        Cell[][] comCells = new Cell[SIZE][SIZE];
-        int userCellBaseId = R.id.user_cell_00;
-        int comCellBaseId = R.id.com_cell_00;
-        int cellCount = 0;
-        UserBoardListener userBoardListener = new UserBoardListener();
-        ComBoardListener comBoardListener = new ComBoardListener();
-        for(int x = 0; x < SIZE; x++) {
-            for(int y = 0; y < SIZE; y++) {
-                //Set user cells
-                userCells[x][y] = findViewById(userCellBaseId + cellCount);
-                userCells[x][y].setCoord(x, y);
-                userCells[x][y].setOnClickListener(userBoardListener);
-                //Set com cells
-                comCells[x][y] = findViewById(comCellBaseId + cellCount);
-                comCells[x][y].setCoord(x, y);
-                comCells[x][y].setOnClickListener(comBoardListener);
-                cellCount++;
+        userBoardView = (BoardView) findViewById(R.id.user_board);
+        comBoardView = (BoardView) findViewById(R.id.com_board);
+
+//        userBoardView.setOnTouchListener(new BoardTouchListener());
+        comBoardView.setOnTouchListener(new ComBoardListener());
+        userBoardView.setOnDragListener(new BoardOnDragListener());
+
+        findViewById(R.id.screen).setOnDragListener(new View.OnDragListener(){
+            @Override
+            public boolean onDrag(View view, DragEvent event) {
+                int action = event.getAction();
+                if(action == DragEvent.ACTION_DROP) {
+                        View v = (View) event.getLocalState();
+                        v.setVisibility(View.VISIBLE);
+                        return true;
+                }
+                return true;
             }
-        }
+        });
 
         //Create ships for User board and Com board
         ArrayList<Ship> userShips = new ArrayList<>();
         ArrayList<Ship> comShips = new ArrayList<>();
-        ShipListener shipListener = new ShipListener();
-        for(int i = 0; i < NUMOFSHIP; i++) {
+        int shipImgId;
+        for(int i = 0; i < NUM_OF_SHIP; i++) {
             int size;
             if(i < 4) {
                 size = 1;
+                shipImgId = R.drawable.ship_01_full_00;
             } else if (i < 7) {
                 size = 2;
+                shipImgId = R.drawable.ship_02_full_00;
             } else if (i < 9) {
                 size = 3;
+                shipImgId = R.drawable.ship_03_full_00;
             } else {
                 size = 4;
+                shipImgId = R.drawable.ship_04_full_00;
             }
             //Set user ships
             Ship userShip = findViewById(R.id.ship_01_00 + i);
             userShip.setSize(size);
-            userShip.setOnClickListener(shipListener);
+            userShip.setShipImgId(shipImgId);
+            userShip.setOnTouchListener(new ShipTouchListener());
+            userShip.isVisible(true);
             userShips.add(userShip);
             //Set com ships
             Ship comShip = new Ship(this);
             comShip.setSize(size);
+            //Hide all com ships until getting a hit
+            comShip.isVisible(false);
             comShips.add(comShip);
         }
 
         //Create UserBoard
-        userBoard = new Board(SIZE, userCells, userShips);
+        userBoard = new Board(SIZE, userShips);
+        userBoardView.setBoard(userBoard);
         //Create ComBoard
-        comBoard = new Board(SIZE, comCells, comShips);
+        comBoard = new Board(SIZE, comShips);
+        comBoardView.setBoard(comBoard);
         //Create players
         user = new Player(userBoard, game);
         com = new ComPlayer(comBoard, game);
-        //Hide all com ships until getting a hit
-        for(int i = 0; i < SIZE; i++) {
-            for(int j = 0; j < SIZE; j++) {
-                com.getBoard().getCells()[i][j].setImageResource(R.drawable.cell_default);
-            }
-        }
 
     }
 
@@ -320,10 +325,6 @@ public class GamePlayActivity extends AppCompatActivity {
         ibRandom.setOnClickListener(funcListener);
         ibNext.setOnClickListener(funcListener);
 
-        //Display guiding message
-        tvGuide = findViewById(R.id.tv_guide);
-        tvGuide.setClickable(false);
-
         //Display pause game button
         ImageButton ibPause = findViewById(R.id.ib_pause);
         ibPause.setVisibility(View.VISIBLE);
@@ -331,16 +332,6 @@ public class GamePlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 game.pauseGame();
-            }
-        });
-
-        //Click a space to deselect ship
-        findViewById(R.id.screen).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deselectShip();
-                selectedShip = null;
-                placingShip = false;
             }
         });
     }
@@ -425,108 +416,99 @@ public class GamePlayActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    //Mark touched ship as selected
-    public void selectShip(Ship ship) {
-        selectedShip = ship;
-        if(ship.isPlaced()) { //Ship has been placed on board
-            for(Cell cell : selectedShip.getPlacedCells()) {
-                cell.setImageResource(cell.getImgBaseId() + (2 * ship.getSize()));
-            }
-        } else { //Ship hasn't been placed on board
-            switch(selectedShip.getSize()) {
-                case 1:
-                    shipImgId = R.drawable.ship_01_full_01;
-                    break;
-                case 2:
-                    shipImgId = R.drawable.ship_02_full_01;
-                    break;
-                case 3:
-                    shipImgId = R.drawable.ship_03_full_01;
-                    break;
-                case 4:
-                    shipImgId = R.drawable.ship_04_full_01;
-                    break;
-            }
-            selectedShip.setImageResource(shipImgId);
-        }
-    }
-    //Remove selected mark from current selected ship
-    public void deselectShip() {
-        if(selectedShip == null) {
-            return;
-        }
-        //Remove selected mark from pre-selected cells
-        if(selectedShip.isPlaced()) { //Ship has been placed on board
-            for(Cell cell : selectedShip.getPlacedCells()) {
-                cell.updateImg();
-            }
-        } else { // Ship hasn't been placed on board
-            selectedShip.setImageResource(shipImgId - 1);
-        }
-    }
+//    //Mark touched ship as selected
+//    public void selectShip(Ship ship) {
+//        selectedShip = ship;
+//        if(ship.isPlaced()) { //Ship has been placed on board
+//            for(Cell cell : selectedShip.getPlacedCells()) {
+//                cell.setImageId(cell.getImageId() + (2 * ship.getSize()));
+//            }
+//        } else { //Ship hasn't been placed on board
+//            switch(selectedShip.getSize()) {
+//                case 1:
+//                    shipImgId = R.drawable.ship_01_full_01;
+//                    break;
+//                case 2:
+//                    shipImgId = R.drawable.ship_02_full_01;
+//                    break;
+//                case 3:
+//                    shipImgId = R.drawable.ship_03_full_01;
+//                    break;
+//                case 4:
+//                    shipImgId = R.drawable.ship_04_full_01;
+//                    break;
+//            }
+//            selectedShip.setImageResource(shipImgId);
+//        }
+//    }
+//    //Remove selected mark from current selected ship
+//    public void deselectShip() {
+//        if(selectedShip == null) {
+//            return;
+//        }
+//        //Remove selected mark from pre-selected cells
+//        if(selectedShip.isPlaced()) { //Ship has been placed on board
+//            for(Cell cell : selectedShip.getPlacedCells()) {
+//                cell.updateImg();
+//            }
+//        } else { // Ship hasn't been placed on board
+//            selectedShip.setImageResource(shipImgId - 1);
+//        }
+//    }
 
     public void displayMessage(CharSequence message) {
-        tvGuide.setText(message);
-        tvGuide.setVisibility(View.VISIBLE);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                tvGuide.setText("");
-                tvGuide.setVisibility(View.GONE);
-            }
-        }, 1500);
-    }
-
-    public class ShipListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            game.playSoundEffect(soundIdPickup);
-            //Deselect pre-selected ship
-            deselectShip();
-            //Select this ship
-            selectShip((Ship)view);
-            placingShip = true;
+        if(toast != null) {
+            toast.cancel();
         }
+        toast = Toast.makeText(GamePlayActivity.this, message, Toast.LENGTH_LONG);
+        toast.show();
     }
 
-    public class UserBoardListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            if(!((Cell)view).hasShip()) { //Selected a cell without ship
-                if(placingShip) { //Place selected Ship at empty Cell
-                    game.playSoundEffect(soundIdPlace);
-                    //Place ship at new cells
-                    if (userBoard.canPlaceShip(selectedShip, (Cell)view)) {
-                        deselectShip();
-                        //Remove full ship img (right)
-                        if(userBoard.getShips().indexOf(selectedShip) != -1) {
-                            selectedShip.setVisibility(View.INVISIBLE);
-                            selectedShip.setClickable(false);
-                        }
-                        selectedShip.removeShip();
-                        userBoard.placeShip(selectedShip, (Cell)view);
-                        placingShip = false;
-                        selectShip(selectedShip);
-                    } else {
-                        //Can't place ship
-                        //Display warning message
-                        displayMessage(getText(R.string.tv_guide_place_failed));
-
-                    }
-                } else {
-                    deselectShip();
-                    selectedShip = null;
-                }
-            } else { //Selected a cell with ship
-                game.playSoundEffect(soundIdPickup);
-                //Remove selecting mark from pre-selected ship
-                deselectShip();
-                //Change selectedShip to the one at clicked cell, mark as selected
-                selectShip(((Cell)view).getShip());
-                placingShip = true;
-            }
-        }
-    }
+//    public class UserBoardListener implements View.OnTouchListener {
+//        @Override
+//        public boolean onTouch(View view, MotionEvent event) {
+//            int action = event.getAction();
+//            Cell cell = ((BoardView)view).locateCell(event.getX(), event.getY());
+//            System.out.println("Touched cell: " + cell.getX() + "," + cell.getY());
+//            if(action == MotionEvent.ACTION_DOWN) {
+//                if(!cell.hasShip()) { //Selected a cell without ship
+//                    if(placingShip) { //Place selected Ship at empty Cell
+//                        game.playSoundEffect(soundIdPlace);
+//                        //Place ship at new cells
+//                        if (userBoard.canPlaceShip(selectedShip, cell)) {
+////                            deselectShip();
+//                            //Remove full ship img (right)
+//                            if(userBoard.getShips().indexOf(selectedShip) != -1) {
+//                                selectedShip.setVisibility(View.INVISIBLE);
+//                                selectedShip.setClickable(false);
+//                            }
+//                            selectedShip.removeShip();
+//                            userBoard.placeShip(selectedShip, cell);
+//                            placingShip = false;
+////                            selectShip(selectedShip);
+//                        } else {
+//                            //Can't place ship
+//                            //Display warning message
+//                            displayMessage(getText(R.string.tv_guide_place_failed));
+//
+//                        }
+//                    } else {
+////                        deselectShip();
+//                        selectedShip = null;
+//                    }
+//                } else { //Selected a cell with ship
+//                    game.playSoundEffect(soundIdPickup);
+//                    //Remove selecting mark from pre-selected ship
+////                    deselectShip();
+//                    //Change selectedShip to the one at clicked cell, mark as selected
+////                    selectShip(cell.getShip());
+//                    placingShip = true;
+//                }
+//                ((BoardView)view).invalidate();
+//            }
+//            return true;
+//        }
+//    }
 
     public class FunctionListener implements View.OnClickListener {
         @Override
@@ -544,15 +526,25 @@ public class GamePlayActivity extends AppCompatActivity {
                             selectedShip.rotate();
                         } else {
                             //Remove ship
-                            deselectShip();
+//                            deselectShip();
                             Cell selectedShipStartCell = selectedShip.getPlacedCells().get(0);
                             selectedShip.removeShip();
                             //Place rotated ship
                             userBoard.placeShip(selectedShip, selectedShipStartCell);
                             //Mark ship as selected
-                            selectShip(selectedShip);
-                            //Prevent moving ship after rotated
-                            placingShip = false;
+//                            selectShip(selectedShip);
+                            float cellSize = userBoardView.cellSize();
+                            RelativeLayout.LayoutParams params;
+                            if(selectedShip.getDir()) {
+                                params = new RelativeLayout.LayoutParams((int)(cellSize * selectedShip.getSize()), (int)cellSize);
+                                params.leftMargin = (int)(selectedShipStartCell.getX() * cellSize);
+                                params.topMargin = (int)(selectedShipStartCell.getY() * cellSize);
+                            } else {
+                                params = new RelativeLayout.LayoutParams((int)cellSize, (int)(cellSize * selectedShip.getSize()));
+                                params.leftMargin = (int)(selectedShipStartCell.getX() * cellSize);
+                                params.topMargin = (int)(selectedShipStartCell.getY() * cellSize);
+                            }
+                            selectedShip.setLayoutParams(params);
                         }
                     } else {
                         //No ship selected or selected ship hasn't been placed on board
@@ -562,19 +554,19 @@ public class GamePlayActivity extends AppCompatActivity {
                     break;
                 case R.id.ib_random:
                     game.playSoundEffect(soundIdPlace);
-                    deselectShip();
+//                    deselectShip();
                     selectedShip = null;
-                    placingShip = false;
                     //Hide all full-img-ship
                     for(Ship ship : userBoard.getShips()) {
                         ship.setVisibility(View.INVISIBLE);
                         ship.setClickable(false);
                     }
                     userBoard.placeShipRandomly();
-
+                    userBoardView.readyToDraw();
+                    userBoardView.invalidate();
                     break;
                 case R.id.ib_next:
-                    deselectShip();
+//                    deselectShip();
                     //If all ships are placed on board, send Board and move to GamePlayActivity
                     boolean allShipsPlaced = true;
                     for(Ship ship : userBoard.getShips()) {
@@ -586,6 +578,10 @@ public class GamePlayActivity extends AppCompatActivity {
 //                        Intent intent = new Intent(GamePlayActivity.this, GamePlayActivity.class);
 //                        intent.putExtra("uBoard", Parcels.wrap(userBoard));
 //                        startActivity(intent);
+                        //Hide ship objects and then draw them on board with Canvas
+                        for(Ship ship : user.getBoard().getShips()) {
+                            ship.setVisibility(View.GONE);
+                        }
                         game.startGame();
                     } else {
                         //Display warning message
@@ -595,34 +591,155 @@ public class GamePlayActivity extends AppCompatActivity {
         }
     }
 
-    private class ComBoardListener implements View.OnClickListener {
+    private class ComBoardListener implements View.OnTouchListener {
         //Get user shoot
         @Override
-        public void onClick(View view) {
-            if(((Cell)view).isHit()) {
-                return;
-            }
-            ShootResult result = user.shoot((Cell)view);
-            if(result == ShootResult.HIT) {
-                ((Cell)view).setImageResource(R.drawable.user_hit);
-            } else if(result == ShootResult.MISS) {
-                //To com turn
-                game.changeArrowDir();
-                game.disableBoard(comBoard);
-                com.randomlyShoot(user.getBoard());
-            } else { //Kill
-                //Show the sink ship
-                ((Cell)view).getShip().sink();
-                if(result == ShootResult.END) {
-                    //EndGame
-                    game.endGame(user);
-
+        public boolean onTouch(View view, MotionEvent event) {
+            int action = event.getAction();
+            Cell cell = ((BoardView)view).locateCell(event.getX(), event.getY());
+            if(action == MotionEvent.ACTION_DOWN) {
+                if(cell.isHit()) {
+                    return false;
                 }
-            }
-            view.setClickable(false);
-        }
+                ShootResult result = user.shoot(cell);
+                if(result == ShootResult.HIT) {
+                    //Do nothing
+                } else if(result == ShootResult.MISS) {
+                    //To com turn
+                    game.changeArrowDir();
+                    game.disableBoard(com);
+                    com.randomlyShoot(user.getBoard(), userBoardView);
+                } else { //Kill
+                    //Show the sink ship
+                    cell.getShip().sink();
+                    if(result == ShootResult.END) {
+                        //EndGame
+                        game.endGame(user);
 
+                    }
+                }
+                view.setClickable(false);
+                ((BoardView)view).invalidate();
+            }
+            return true;
+        }
     }
+
+    private class ShipTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View view, MotionEvent event) {
+            System.out.println("Ship touched");
+            int action = event.getAction();
+            if(action == MotionEvent.ACTION_DOWN) {
+                selectedShip = (Ship) view;
+                if(selectedShip.isPlaced()) { //If ship is already placed on board
+                    //Remove ship
+                    selectedShip.removeShip();
+                }
+                ClipData clipData = ClipData.newPlainText("", "");
+                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+                view.startDrag(clipData, shadowBuilder, view, 0);
+                view.setVisibility(View.INVISIBLE);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+//    private class BoardTouchListener implements View.OnTouchListener {
+//        @Override
+//        public boolean onTouch(View board, MotionEvent event) {
+//            int action = event.getAction();
+////            if(action == MotionEvent.ACTION_DOWN) {
+////                for(Ship ship : userBoard.getShips()) {
+////                    ship.setVisibility(View.VISIBLE);
+////                }
+////            }
+//            userBoardView.invalidate();
+//            return true;
+//        }
+//    }
+
+    private class BoardOnDragListener implements View.OnDragListener {
+
+        @Override
+        public boolean onDrag(View board, DragEvent event) {
+            int action = event.getAction();
+            float cellSize = ((BoardView)board).cellSize();
+            RelativeLayout.LayoutParams params;
+            Cell cell = null;
+            float cellX, cellY;
+            switch (action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    //Do nothing
+                    break;
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    //Draw ship shadow
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+//                    if(cell != null) {
+//                        for(int i = 0; i < selectedShip.getSize(); i++) {
+//                            user.getBoard().getCells()[cell.getX() + i][cell.getY() + i].restoreImageId();
+//                        }
+//                    }
+                    //Remove ship shadow
+                    break;
+                case DragEvent.ACTION_DROP:
+                    if(selectedShip.getDir()) { //Horizontal ship
+                        params = new RelativeLayout.LayoutParams((int)cellSize * selectedShip.getSize(), (int)cellSize);
+                        cellX = event.getX() - ((float)selectedShip.getSize() / 2.0f - 0.5f) * cellSize;
+                        if(cellX < 0) {
+                            cellX = 0;
+                        }
+                        cellY = event.getY();
+                    } else { //Vertical ship
+                        params  = new RelativeLayout.LayoutParams((int)cellSize, (int)cellSize * selectedShip.getSize());
+                        cellX = event.getX();
+                        cellY = event.getY() - ((float)selectedShip.getSize() / 2.0f - 0.5f) * cellSize;
+                        if(cellY < 0) {
+                            cellY = 0;
+                        }
+                    }
+                    cell = ((BoardView)board).locateCell(cellX, cellY);
+
+                    if(cell != null && user.getBoard().canPlaceShip(selectedShip, cell)) {
+                        //Drop the ship on the boardView
+                            //Remove original view
+                        View view = (View) event.getLocalState();
+                        ViewGroup owner = (ViewGroup) view.getParent();
+                        owner.removeView(view);
+                            //Add view to boardView
+                        params.leftMargin = (int) (cell.getX() * cellSize);
+                        params.topMargin = (int) (cell.getY() * cellSize);
+                        ((RelativeLayout)board).addView(view, params);
+                        view.setOnTouchListener(new ShipTouchListener());
+                        view.setVisibility(View.VISIBLE);
+
+                        //Place the ship on the board
+                        user.getBoard().placeShip(selectedShip, cell);
+//                        board.invalidate();
+                    } else {
+                        //Can't place ship
+                        //Display warning message
+                        displayMessage(getText(R.string.tv_guide_place_failed));
+                        //Place ship at original place
+                        ((View)event.getLocalState()).setVisibility(View.VISIBLE);
+                    }
+
+//                    BoardView container = (BoardView) board;
+//                    container.addView(view);
+//                    view.setVisibility(View.VISIBLE);
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    break;
+            }
+            return true;
+        }
+    }
+
 
 
 }
