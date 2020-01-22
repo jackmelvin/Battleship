@@ -11,8 +11,8 @@
     <string name="tv_com">COM</string>"
     <string name="bt_howToPlay">How to play</string>
     <string name="tv_htp_place_ship">Place Ships</string>
-    <string name="tv_htp_1">Touch a ship ① then touch a cell on board ② to place ship, the touched cell will be the ship\'s head.</string>
-    <string name="tv_htp_2">Touch a ship placed on board and click Rotate button ③ to rotate the ship.</string>
+    <string name="tv_htp_1">Touch a ship, drag and drop it onto the board</string>
+    <string name="tv_htp_2">After drag and drop, or after touching a ship placed on board, touch Rotate button ③ to rotate the ship.</string>
     <string name="tv_htp_3">★Two ships can\'t be placed right next to each other, there must be at least one cell of space between them.</string>
     <string name="tv_htp_4">Touch the All Random button ④ to place all ships randomly. You can still edit them later.</string>
     <string name="tv_htp_5">When all ships are placed on board, touch Next button ⑤ to play.</string>

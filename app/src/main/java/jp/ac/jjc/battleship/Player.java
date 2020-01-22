@@ -7,9 +7,9 @@ enum ShootResult {
     FALSE
 }
     class Player {
-    Board board;
+    private Board board;
     GamePlayActivity.GamePlay game;
-    ShootResult lastShoot = null;
+    private ShootResult lastShoot = null;
 
     Player(Board board, GamePlayActivity.GamePlay game) {
         this.board = board;

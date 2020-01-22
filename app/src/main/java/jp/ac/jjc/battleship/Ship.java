@@ -1,112 +1,80 @@
 package jp.ac.jjc.battleship;
 
-import android.content.Context;
-import android.util.AttributeSet;
-
-
-import androidx.appcompat.widget.AppCompatImageButton;
 
 import java.util.ArrayList;
 
-public class Ship extends AppCompatImageButton {
+class Ship {
+    //Ship's length
     private int size;
-    private boolean dir = true; //True == Horizontal
-    private boolean isPlaced;
-    private boolean isSelected;
-    private boolean isVisible;
-    private ArrayList<Cell> placedCells = new ArrayList<Cell>();
-    private ArrayList<Cell> surroundCells = new ArrayList<Cell>();
-    private int shipImgId;
+    //Ship's id
+    private int id;
+    //Ship's rotation
+    private boolean isHorizontal = true;
+    //Ship's placed cells
+    private ArrayList<Cell> placedCells;
+    //Cells that the ship is surrounded by.
+    //Two ships must not be placed right next to each other
+    //There must be at least 1 cell between them
+    private ArrayList<Cell> surroundingCells;
+    private boolean isVisible = true;
+    private boolean isPlaced = false;
 
-    public Ship(Context context) {
-        super(context);
-    }
-
-    public Ship(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-//    public Ship(Context context, int size) {
-//        super(context);
-//        this.size = size;
-//    }
-
-    void setShipImgId(int shipImgId) {
-        this.shipImgId = shipImgId;
-    }
-//
-//    int getShipImgId() {
-//        return shipImgId;
-//    }
-
-    void setSize(int size) {
+    Ship(int size, int id) {
         this.size = size;
+        this.id = id;
     }
-    int getSize() {
-        return size;
-    }
-    void setDir(boolean dir) {
-        this.dir = dir;
-    }
-    boolean getDir() {
-        return dir;
-    }
-    void rotate() {
-        if(dir) {
-            shipImgId += 2;
-        } else {
-            shipImgId -= 2;
-        }
-        dir = !dir;
-        setImageResource(shipImgId);
+
+    boolean isPlaced() {
+        return isPlaced;
     }
 
     boolean isVisible() {
         return isVisible;
     }
 
-    void isVisible(boolean visibility) {
-        isVisible = visibility;
+    void setInvisible() {
+        this.isVisible = false;
     }
 
-    int getImgBaseId() {
-        int imgBaseId;
-        if(dir) {
-            switch (size) {
-                case 1:
-                    imgBaseId = R.drawable.ship_01_00;
-                    break;
-                case 2:
-                    imgBaseId = R.drawable.ship_02_00;
-                    break;
-                case 3:
-                    imgBaseId = R.drawable.ship_03_00;
-                    break;
-                case 4:
-                    imgBaseId = R.drawable.ship_04_00;
-                    break;
-                default:
-                    imgBaseId = -1;
-            }
-        } else {
-            switch (size) {
-                case 1:
-                    imgBaseId = R.drawable.ship_vertical_01_00;
-                    break;
-                case 2:
-                    imgBaseId = R.drawable.ship_vertical_02_00;
-                    break;
-                case 3:
-                    imgBaseId = R.drawable.ship_vertical_03_00;
-                    break;
-                case 4:
-                    imgBaseId = R.drawable.ship_vertical_04_00;
-                    break;
-                default:
-                    imgBaseId = -1;
-            }
+    int getSize() {
+        return size;
+    }
+
+    int getId() {
+        return id;
+    }
+
+    int getImageId() {
+        int imageId;
+        switch (size) {
+            case 1:
+                imageId = R.drawable.ship_01_full_00;
+                break;
+            case 2:
+                imageId = R.drawable.ship_02_full_00;
+                break;
+            case 3:
+                imageId = R.drawable.ship_03_full_00;
+                break;
+            case 4:
+                imageId = R.drawable.ship_04_full_00;
+                break;
+            default:
+                //Error, invalid ship size
+                imageId = 0;
+                break;
         }
-        return imgBaseId;
+        //The ship images are named so that
+        //Vertical ship image = horizontal ship image +2
+        if(isHorizontal) {
+            return imageId;
+        } else {
+            return imageId + 2;
+        }
+    }
+
+    boolean isHorizontal() {
+        return isHorizontal;
     }
 
     boolean isSunk() {
@@ -117,49 +85,99 @@ public class Ship extends AppCompatImageButton {
         }
         return true;
     }
-    void sink() {
-        if(!isVisible) {
-            isVisible = true;
+
+    private int getHeadCellImageId() {
+        int imageId;
+        if(isHorizontal) {
+            switch(size) {
+                case 1:
+                    imageId = R.drawable.ship_01_00;
+                    break;
+                case 2:
+                    imageId = R.drawable.ship_02_00;
+                    break;
+                case 3:
+                    imageId = R.drawable.ship_03_00;
+                    break;
+                case 4:
+                    imageId = R.drawable.ship_04_00;
+                    break;
+                default:
+                    //Error, unexpected ship size
+                    imageId = -1;
+            }
+        } else {
+            switch (size) {
+                case 1:
+                    imageId = R.drawable.ship_vertical_01_00;
+                    break;
+                case 2:
+                    imageId = R.drawable.ship_vertical_02_00;
+                    break;
+                case 3:
+                    imageId = R.drawable.ship_vertical_03_00;
+                    break;
+                case 4:
+                    imageId = R.drawable.ship_vertical_04_00;
+                    break;
+                default:
+                    //Error, unexpected ship size
+                    imageId = -1;
+            }
         }
-        for(Cell cell : surroundCells) {
-            cell.hit();
-        }
+        return imageId;
     }
 
-    boolean isPlaced() {
-        return isPlaced;
-    }
-    void removeShip() {
-//        isPlaced = false;
-        if(!placedCells.isEmpty()) {
-            for(Cell cellToRemove : placedCells) {
-                cellToRemove.removeShip(this);
-            }
-            placedCells.clear();
-            //Remove surroundCells
-            for(Cell cell : surroundCells) {
-                cell.removeSurroundShip(this);
-            }
-            surroundCells.clear();
-        }
-    }
-    ArrayList<Cell> getPlacedCells() {
-        return placedCells;
-    }
-
-    void placeShip(ArrayList<Cell> cellsToPlace, ArrayList<Cell> surroundCells) {
-        //Set this ship on each cell-to-place
-        int i = 0;
-        for(Cell cell : cellsToPlace) {
-            cell.setShip(this, getImgBaseId() + i++);
+    void place(ArrayList<Cell> cellsToPlace, ArrayList<Cell> surroundingCells) {
+        if(isPlaced) {
+            remove();
         }
         this.placedCells = cellsToPlace;
-        //Set surround cells
-        this.surroundCells = surroundCells;
-        for(Cell cell : surroundCells) {
-            cell.setSurroundShip(this);
+        this.surroundingCells = surroundingCells;
+        //Set ship and imageId to the cells to place
+        for(int i = 0; i < size; i++) {
+            placedCells.get(i).placeShip(this, getHeadCellImageId() + i);
         }
-
+        //Set surrounding cells
+        for(Cell cell : surroundingCells) {
+            cell.setSurroundingShip(this);
+        }
         isPlaced = true;
+    }
+
+    private void remove() {
+        if(!isPlaced) return;
+        //Remove ship from cells placed on
+        for(Cell cell : placedCells) {
+            cell.removeShip(this);
+        }
+        //Remove ship from surrounding cells' list
+        for(Cell cell : surroundingCells) {
+            cell.removeShip(this);
+        }
+        isPlaced = false;
+    }
+
+    Cell rotate() {
+        isHorizontal = !isHorizontal;
+        Cell headCell = null;
+        if(isPlaced) {
+            headCell = placedCells.get(0);
+            remove();
+        }
+        return headCell;
+    }
+
+    void sink() {
+        //All cells are hit
+        //Show the surroundingCell, make them unclickable
+        for(Cell cell : surroundingCells) {
+            cell.hit();
+        }
+        isVisible = true;
+    }
+
+    Cell getHeadCell() {
+        return placedCells.get(0);
     }
 }

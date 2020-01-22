@@ -16,6 +16,7 @@ class ComPlayer extends Player {
         super(board, game);
         board.placeShipRandomly();
 
+
     }
     void randomlyShoot(final Board userBoard, final BoardView userBoardView) {
         game.disableBoard(com);
@@ -39,7 +40,7 @@ class ComPlayer extends Player {
                     if (firstHit == null) { //Not getting any hit yet
                         x = rand.nextInt(10);
                         y = rand.nextInt(10);
-                        if(userBoard.getCells()[x][y].isHit()) {
+                        if(userBoard.getCell(x, y).isHit()) {
                             continue;
                         }
                     } else if (nextHit == null) { //Second shoot after getting a cell hit
@@ -51,7 +52,7 @@ class ComPlayer extends Player {
                             int firstY = firstHit.getY();
                             switch(randDir) {
                                 case 0: //Shoot the cell to the left of firstHit
-                                    if(!userBoard.isOutOfBounds(firstX, firstY-1) && !userBoard.getCells()[firstX][firstY-1].isHit()) {
+                                    if(!userBoard.isOutOfBounds(firstX, firstY-1) && !userBoard.getCell(firstX, firstY-1).isHit()) {
                                         x = firstX;
                                         y = firstY-1;
                                         break;
@@ -60,7 +61,7 @@ class ComPlayer extends Player {
                                         continue;
                                     }
                                 case 1: //Shoot the cell to the right of firstHit
-                                    if(!userBoard.isOutOfBounds(firstX, firstY+1) && !userBoard.getCells()[firstX][firstY+1].isHit()) {
+                                    if(!userBoard.isOutOfBounds(firstX, firstY+1) && !userBoard.getCell(firstX, firstY+1).isHit()) {
                                         x = firstX;
                                         y = firstY+1;
                                         break;
@@ -69,7 +70,7 @@ class ComPlayer extends Player {
                                         continue;
                                     }
                                 case 2: //Shoot the cell above of firstHit
-                                    if(!userBoard.isOutOfBounds(firstX-1, firstY) && !userBoard.getCells()[firstX-1][firstY].isHit()) {
+                                    if(!userBoard.isOutOfBounds(firstX-1, firstY) && !userBoard.getCell(firstX-1, firstY).isHit()) {
                                         x = firstX-1;
                                         y = firstY;
                                         break;
@@ -78,7 +79,7 @@ class ComPlayer extends Player {
                                         continue;
                                     }
                                 case 3: //Shoot the cell below firstHit
-                                    if(!userBoard.isOutOfBounds(firstX+1, firstY) && !userBoard.getCells()[firstX+1][firstY].isHit()) {
+                                    if(!userBoard.isOutOfBounds(firstX+1, firstY) && !userBoard.getCell(firstX+1, firstY).isHit()) {
                                         x = firstX+1;
                                         y = firstY;
                                         break;
@@ -98,14 +99,14 @@ class ComPlayer extends Player {
                         int nextY = nextHit.getY();
                         if(nextY == firstY) { //Shooting vertically
                             if(nextX > firstX) { //Shooting down
-                                if(!userBoard.isOutOfBounds(nextX+1, nextY) && !userBoard.getCells()[nextX+1][nextY].isHit()) {
+                                if(!userBoard.isOutOfBounds(nextX+1, nextY) && !userBoard.getCell(nextX+1, nextY).isHit()) {
                                     x = nextX+1;
                                 } else {
                                     x = firstX-1;
                                 }
                                 y = nextY;
                             } else { //Shooting up
-                                if (!userBoard.isOutOfBounds(nextX-1, nextY) && !userBoard.getCells()[nextX-1][nextY].isHit()) {
+                                if (!userBoard.isOutOfBounds(nextX-1, nextY) && !userBoard.getCell(nextX-1, nextY).isHit()) {
                                     x = nextX-1;
                                 } else {
                                     x = firstX+1;
@@ -116,14 +117,14 @@ class ComPlayer extends Player {
                         if(nextX == firstX) { //Shooting horizontally
                             if(nextY > firstY) { //Shooting right
                                 x = nextX;
-                                if(!userBoard.isOutOfBounds(nextX, nextY+1) && !userBoard.getCells()[nextX][nextY+1].isHit()) {
+                                if(!userBoard.isOutOfBounds(nextX, nextY+1) && !userBoard.getCell(nextX, nextY+1).isHit()) {
                                     y = nextY+1;
                                 } else {
                                     y = firstY-1;
                                 }
                             } else { //Shooting left
                                 x = nextX;
-                                if(!userBoard.isOutOfBounds(nextX, nextY-1) && !userBoard.getCells()[nextX][nextY-1].isHit()) {
+                                if(!userBoard.isOutOfBounds(nextX, nextY-1) && !userBoard.getCell(nextX, nextY-1).isHit()) {
                                     y = nextY-1;
                                 } else {
                                     y = firstY+1;
@@ -131,7 +132,7 @@ class ComPlayer extends Player {
                             }
                         }
                     }
-                    ShootResult result = shoot(userBoard.getCells()[x][y]);
+                    ShootResult result = shoot(userBoard.getCell(x, y));
                     lastShootResult = result;
                     if(result == ShootResult.MISS) { //Case Miss
                         //To user turn
@@ -150,14 +151,14 @@ class ComPlayer extends Player {
                     } else { //Case Hit
                         //Set condition for next shoot
                         if(firstHit == null) {
-                            firstHit = userBoard.getCells()[x][y];
+                            firstHit = userBoard.getCell(x, y);
                             secondShootDir = new ArrayList<>();
                             secondShootDir.add(0);
                             secondShootDir.add(1);
                             secondShootDir.add(2);
                             secondShootDir.add(3);
                         } else {
-                            nextHit = userBoard.getCells()[x][y];
+                            nextHit = userBoard.getCell(x, y);
                         }
                         randomlyShoot(userBoard, userBoardView);
                     }

@@ -29,23 +29,12 @@
             android:text="@string/tv_htp_1"
             android:textSize="16sp"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/iv_htp_01"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/iv_htp_02"/>
-
-        </LinearLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="228dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/iv_htp_01" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,22 +47,11 @@
             android:text="@string/tv_htp_2"
             android:textSize="16sp"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/iv_htp_03"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/iv_htp_04"/>
-
-        </LinearLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="228dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/iv_htp_02" />
 
         <TextView
             android:layout_width="wrap_content"

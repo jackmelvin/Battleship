@@ -11,8 +11,8 @@
     <string name="tv_com">COM</string>"
     <string name="bt_howToPlay">やり方</string>
     <string name="tv_htp_place_ship">戦艦の配置</string>
-    <string name="tv_htp_1">戦艦をタッチ①し、ボードのセルをタッチ②すると、戦艦が配置されます。選択されたセルは戦艦の頭になリます。</string>
-    <string name="tv_htp_2">ボードに配置された戦艦をタッチし、回転ボタン③をタッチすると、戦艦が回転します。</string>
+    <string name="tv_htp_1">戦艦をタッチ①し、ボードにドラッグ＆ドロップし、戦艦を配置します。</string>
+    <string name="tv_htp_2">ドラッグ＆ドロップの後、またはボードに配置された戦艦をタッチし、回転ボタン③をタッチすると、戦艦が回転します。</string>
     <string name="tv_htp_3">★２隻の戦艦を近接に置くことができません、一つ以上のセルのスペースが必要です。</string>
     <string name="tv_htp_4">オールランダムボタン④をタッチすると、全ての戦艦がランダムに配置されます。後からでも位置や回転を変えることができます。</string>
     <string name="tv_htp_5">全ての戦艦がボードに配置されたら、プレイボタン⑤をタッチし、ゲームを開始します。</string>

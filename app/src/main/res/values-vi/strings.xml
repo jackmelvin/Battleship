@@ -11,8 +11,8 @@
     <string name="tv_com">Máy</string>"
     <string name="bt_howToPlay">Cách chơi</string>
     <string name="tv_htp_place_ship">Đặt chiến hạm</string>
-    <string name="tv_htp_1">Chọn một chiến hạm ① sau đó chọn một ô trên bảng ② để đặt chiến hạm, ô được chọn sẽ là đầu của chiến hạm.</string>
-    <string name="tv_htp_2">Chọn một chiến hạm đã được đặt trên bảng và bấm nút Xoay ③ để xoay chiến hạm.</string>
+    <string name="tv_htp_1">" Kéo và thả một chiến hạm lên bảng để đặt chiến hạm."</string>
+    <string name="tv_htp_2">Sau khi kéo và thả, hoặc sau khi chọn một chiến hạm đã được đặt trên bảng, bấm nút Xoay ③ để xoay chiến hạm.</string>
     <string name="tv_htp_3">★Hai chiến hạm không thể được đặt sát nhau, cần có khoảng cách ít nhất 1 ô trống.</string>
     <string name="tv_htp_4">Chọn nút Ngẫu nhiên ④ để đặt ngẫu nhiên tất cả chiến hạm. Sau khi đặt vẫn có thể chỉnh sửa.</string>
     <string name="tv_htp_5">Khi tất cả chiến hạm đã được đặt trên bảng, bấm nút Tiếp theo ⑤ để vào màn chơi.</string>

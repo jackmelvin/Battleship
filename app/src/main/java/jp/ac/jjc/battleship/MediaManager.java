@@ -57,6 +57,7 @@ class MediaManager {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     mediaPlayer.start();
+                    mediaPlayer.setLooping(true);
                 }
             });
         }
